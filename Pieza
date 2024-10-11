@@ -1,0 +1,70 @@
+package hotel;
+
+public class Habitacion {
+
+    // Atributos
+    private int numero;
+    private String estado; // "D" - Disponible, "R" - Reservada, "OA" - Ocupada con alimentación, "OS" - Ocupada sin alimentación
+    private int cantidadNoches;
+    private boolean servicioAlimentacion;
+
+    // Valores de las habitaciones
+    private final double PRECIO_SIN_COMIDA = 30000;
+    private final double PRECIO_CON_COMIDA = 45000;
+
+    // Constructor: Inicializa la habitación con su número y estado disponible
+    public Habitacion(int numero) {
+        this.numero = numero;
+        this.estado = "D"; // Disponible por defecto
+        this.cantidadNoches = 0;
+        this.servicioAlimentacion = false;
+    }
+
+    // Getters y Setters
+    public int getNumero() {
+        return numero;
+    }
+
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public int getCantidadNoches() {
+        return cantidadNoches;
+    }
+
+    public void setCantidadNoches(int cantidadNoches) {
+        this.cantidadNoches = cantidadNoches;
+    }
+
+    public boolean isServicioAlimentacion() {
+        return servicioAlimentacion;
+    }
+
+    public void setServicioAlimentacion(boolean servicioAlimentacion) {
+        this.servicioAlimentacion = servicioAlimentacion;
+    }
+
+    // Método para calcular el monto total basado en noches y servicio de alimentación
+    public double calcularMontoTotal() {
+        return cantidadNoches * (servicioAlimentacion ? PRECIO_CON_COMIDA : PRECIO_SIN_COMIDA);
+    }
+
+    @Override
+    public String toString() {
+        return "Habitación{" +
+                "Número=" + numero +
+                ", Estado='" + estado + '\'' +
+                ", Noches Reservadas=" + cantidadNoches +
+                ", Servicio Alimentación=" + (servicioAlimentacion ? "Sí" : "No") +
+                '}';
+    }
+}
