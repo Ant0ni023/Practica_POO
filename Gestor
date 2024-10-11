@@ -1,0 +1,91 @@
+package hotel;
+
+import java.util.ArrayList;
+
+public class GestorHabitaciones {
+
+    private ArrayList<Habitacion> habitaciones; // Lista de todas las habitaciones
+
+    // Constructor: Inicializa las 10 habitaciones del hotel
+    public GestorHabitaciones() {
+        this.habitaciones = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            habitaciones.add(new Habitacion(i)); // Crea 10 habitaciones numeradas
+        }
+    }
+
+    // Mostrar el estado de todas las habitaciones
+    public void mostrarEstadoHabitaciones() {
+        for (Habitacion habitacion : habitaciones) {
+            System.out.println(habitacion.toString());
+        }
+    }
+
+    // Reservar una habitación (si está disponible)
+    public void reservarHabitacion(int numeroHabitacion, int cantidadNoches, boolean servicioAlimentacion) throws HabitacionNoDisponibleException {
+        Habitacion habitacion = buscarHabitacion(numeroHabitacion);
+        if (!habitacion.getEstado().equals("D")) { // Si la habitación no está disponible (D)
+            throw new HabitacionNoDisponibleException("La habitación no está disponible para reserva.");
+        }
+        habitacion.setCantidadNoches(cantidadNoches);
+        habitacion.setServicioAlimentacion(servicioAlimentacion);
+        habitacion.setEstado("R"); // Cambiar estado a Reservada
+    }
+
+    // Ocupar una habitación reservada (si está en estado 'R')
+    public void ocuparHabitacion(int numeroHabitacion) throws HabitacionNoDisponibleException {
+        Habitacion habitacion = buscarHabitacion(numeroHabitacion);
+        if (!habitacion.getEstado().equals("R")) { // Si la habitación no está reservada
+            throw new HabitacionNoDisponibleException("La habitación no se encuentra reservada para ser ocupada.");
+        }
+        habitacion.setEstado(habitacion.isServicioAlimentacion() ? "OA" : "OS"); // Cambiar estado a Ocupada (con o sin alimentación)
+    }
+
+    // Liberar una habitación ocupada y mostrar la boleta de pago
+    public void liberarHabitacion(int numeroHabitacion) throws OperacionInvalidaException {
+        Habitacion habitacion = buscarHabitacion(numeroHabitacion);
+        if (habitacion.getEstado().equals("D") || habitacion.getEstado().equals("R")) { // Si no está ocupada
+            throw new OperacionInvalidaException("No se puede liberar una habitación que no está ocupada.");
+        }
+
+        // Solicita a la habitación calcular el monto total
+        double montoTotal = habitacion.calcularMontoTotal();
+        mostrarBoleta(habitacion, montoTotal);
+
+        // Reiniciar el estado de la habitación a disponible
+        habitacion.setEstado("D");
+        habitacion.setCantidadNoches(0);
+        habitacion.setServicioAlimentacion(false);
+    }
+
+    // Reiniciar el hotel, poniendo todas las habitaciones como disponibles
+    public void reiniciarHotel(String clave) throws OperacionInvalidaException {
+        if (!"resetAll".equals(clave)) { // Clave de reinicio incorrecta
+            throw new OperacionInvalidaException("Clave de reinicio incorrecta.");
+        }
+        for (Habitacion habitacion : habitaciones) { // Cambia todas las habitaciones a estado "D"
+            habitacion.setEstado("D");
+            habitacion.setCantidadNoches(0);
+            habitacion.setServicioAlimentacion(false);
+        }
+    }
+
+    // Método auxiliar para buscar una habitación por su número
+    private Habitacion buscarHabitacion(int numeroHabitacion) throws HabitacionNoDisponibleException {
+        for (Habitacion habitacion : habitaciones) {
+            if (habitacion.getNumero() == numeroHabitacion) {
+                return habitacion;
+            }
+        }
+        throw new HabitacionNoDisponibleException("Habitación no encontrada.");
+    }
+
+    // Método para mostrar la boleta de pago, sin calcular el monto directamente
+    private void mostrarBoleta(Habitacion habitacion, double montoTotal) {
+        System.out.println("Boleta de Pago:");
+        System.out.println("Número de Habitación: " + habitacion.getNumero());
+        System.out.println("Cantidad de Noches: " + habitacion.getCantidadNoches());
+        System.out.println("Servicio de Alimentación: " + (habitacion.isServicioAlimentacion() ? "Sí" : "No"));
+        System.out.println("Monto Total a Pagar: $" + montoTotal);
+    }
+}
